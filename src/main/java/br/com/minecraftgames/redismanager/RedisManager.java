@@ -7,7 +7,7 @@ public class RedisManager extends Plugin {
     public void onEnable() {
         Redis.initialize();
         try {
-            Redis.getPool().getResource().ping();
+            System.out.print(Redis.getPool().getResource().ping());
         } catch (Exception e) {
             e.printStackTrace();
         }
