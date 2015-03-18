@@ -44,7 +44,7 @@ public class PubSubMessageEvent extends Event {
     /**
      * Converte o evento no formato de uma string
      *
-     * @return PubSubMessage (channel: \"{@code channel}\", message: \"{@code message}\")
+     * @return PubSubMessage (channel: "{@code channel}", message: "{@code message}")
      */
     public String toString() {
         return "PubSubMessage (channel: " + channel + ", message: " + message + ")";

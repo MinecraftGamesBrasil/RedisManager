@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * <h1>Utilidades referente a instâncias</h1>
  *
- * @version 0.0.0
+ * @author Ramon, Lucas
  */
 public class Instances {
 
@@ -62,10 +62,13 @@ public class Instances {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
+            // Limpa os registros dos jogadores conectados a instancia
             for(String stringUUID : rsc.smembers("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnline")) {
                 UUID uuid = UUID.fromString(stringUUID);
                 PlayerData.cleanUpPlayer(uuid);
             }
+
+            // Reseta o tempo do contato da instância com o Redis
             rsc.set("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":heartbeats", "0");
         } catch (JedisConnectionException e) {
             pool.returnBrokenResource(rsc);

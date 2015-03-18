@@ -28,6 +28,9 @@ public class RedisManager extends Plugin {
 
     public static boolean allowConnections;
 
+    /**
+     * Funções realizadas ao iniciar o servidor
+     */
     public void onEnable() {
         plugin = this;
 
@@ -62,10 +65,19 @@ public class RedisManager extends Plugin {
         allowConnections = true;
     }
 
+    /**
+     * Funções realizadas quando o servidor fechar
+     */
     public void onDisable() {
 
     }
 
+    /**
+     * Converte uma mensagem(String) normal no formato de mensagens do BungeeCord(ChatComponent)
+     *
+     * @param message Mensagem(String)
+     * @return Mensagem(ChatComponent)
+     */
     public static BaseComponent[] convert(String message) {
         BaseComponent[] text = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', message.replaceAll("(&)\\1{1,}", "$1")));
         return text;

@@ -14,6 +14,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * <h1>Utilidades referente a dados de jogadores</h1>
+ *
+ * @author Ramon, Lucas
+ */
 public class PlayerData {
 
     /**
@@ -25,10 +30,17 @@ public class PlayerData {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
+            // Remove o jogador da lista de jogadores onlines na instância
             rsc.srem("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnline", uuid.toString());
+
+            // Iguala o tempo da última vez que o jogador esteve online ao último contato da instância com o Redis, caso o jogador não tenha sido limpo antes
             if(rsc.hexists("player:" + uuid.toString(), "online") && Long.parseLong(rsc.hget("player:" + uuid.toString(), "online")) == 0L)
                 rsc.hset("player:" + uuid.toString(), "online", rsc.get("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":heartbeats"));
+
+            // Remove a instância que o jogador esteve conectado de seus dados
             rsc.hdel("player:" + uuid.toString(), "instance");
+
+            // Remove o server do BungeeCord que o jogador esteve conectado do seus dados
             rsc.hdel("player:" + uuid.toString(), "bungee-server");
         } catch (JedisConnectionException e) {
             pool.returnBrokenResource(rsc);
@@ -37,6 +49,11 @@ public class PlayerData {
         }
     }
 
+    /**
+     * Lista de jogadores conectados em todas as instâncias
+     *
+     * @return Set de UUID dos jogadores
+     */
     public static Set<UUID> getPlayers() {
         Set<UUID> players = new HashSet<UUID>();
         for(String instance : RedisConfiguration.instancesIDs)
@@ -44,6 +61,12 @@ public class PlayerData {
         return players;
     }
 
+    /**
+     * Lista de jogadores conectados em determniada instância
+     *
+     * @param instance Instância
+     * @return Set de UUID dos jogadores na instância
+     */
     public static Set<UUID> getPlayersOnInstance(String instance) {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
@@ -62,10 +85,22 @@ public class PlayerData {
         return null;
     }
 
+    /**
+     * Se o jogador está online ou não
+     *
+     * @param uuid UUID do jogador
+     * @return {@code true} para online e {@code false} para offlne
+     */
     public static boolean isPlayerOnline(UUID uuid) {
         return getPlayers().contains(uuid);
     }
 
+    /**
+     * Server do BungeeCord que o jogador se encontra
+     *
+     * @param uuid UUID do jogador
+     * @return ServerInfo do server do BungeeCord
+     */
     public static ServerInfo getBungeeServerFor(UUID uuid) {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
@@ -82,6 +117,12 @@ public class PlayerData {
         return null;
     }
 
+    /**
+     * Instância em que o jogador está conectado
+     *
+     * @param uuid UUID do jogador
+     * @return Instância
+     */
     public static String getInstanceFor(UUID uuid) {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
@@ -98,10 +139,19 @@ public class PlayerData {
         return null;
     }
 
+    /**
+     * Tempo(MS) do último logout do jogador
+     *
+     * @param uuid UUID do jogador
+     * @return Tempo do logout
+     */
     public static long getLastOnline(UUID uuid) {
         long time = -1L;
+
+        // Se o jogador estiver online retornar 0
         if(isPlayerOnline(uuid))
             return 0L;
+
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
@@ -118,9 +168,17 @@ public class PlayerData {
         return 0L;
     }
 
+    /**
+     * Último IP do jogador
+     *
+     * @param uuid UUID do jogador
+     * @return Último IP(InetAddress) do jogador
+     */
     public static InetAddress getIpAddress(UUID uuid) {
+        // Se o jogador estiver online pegar o IP diretamente do BungeeCord
         if(isPlayerOnline(uuid))
             return ProxyServer.getInstance().getPlayer(uuid).getAddress().getAddress();
+
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
