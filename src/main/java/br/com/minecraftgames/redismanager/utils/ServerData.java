@@ -16,7 +16,7 @@ import java.util.Set;
 public class ServerData {
 
     /**
-     * <h1>Lista de jogadores com tell desativado</h1>
+     * Lista de jogadores com tell desativado
      *
      * @return Set de String com o UUID(String) dos jogadores com tell desativado
      */
@@ -34,7 +34,7 @@ public class ServerData {
     }
 
     /**
-     * <h1>Lista de jogadores com citações desativadas</h1>
+     * Lista de jogadores com citações desativadas
      *
      * @return Set de String com o UUID(String) dos jogadores com citações desativadas
      */
@@ -52,7 +52,7 @@ public class ServerData {
     }
 
     /**
-     * <h1>Lista de lobbys em manutenção</h1>
+     * Lista de lobbys em manutenção
      *
      * @return Set de String com os lobbys que estão em manutenção
      */
@@ -70,7 +70,7 @@ public class ServerData {
     }
 
     /**
-     * <h1>Status atual do chat normal</h1>
+     * Status atual do chat normal
      *
      * @return {@code true} para o chat habilitado ou {@code false} para desabilitado
      */

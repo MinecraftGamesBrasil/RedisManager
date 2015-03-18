@@ -16,7 +16,7 @@ import java.util.Set;
 public class Instances {
 
     /**
-     * <h1>Instâncias registradas no Redis</h1>
+     * Instâncias registradas no Redis
      *
      * @return Um Set de String com os IDs das instâncias
      */
@@ -34,7 +34,7 @@ public class Instances {
     }
 
     /**
-     * <h1>Quantidade de jogadores online em todas as instâncias</h1>
+     * Quantidade de jogadores online em todas as instâncias
      *
      * @return Soma da quantidade de jogadores online em cada instância
      */

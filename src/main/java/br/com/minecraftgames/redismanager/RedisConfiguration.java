@@ -44,7 +44,7 @@ public class RedisConfiguration {
     public boolean isChatOff;
 
     /**
-     * <h1>Registra o ID da instancia no Redis</h1>
+     * Registra o ID da instancia no Redis
      */
     private void setInstanceID() {
         // Verifica existência da pasta do plugin e a cria, caso não exista
@@ -73,7 +73,7 @@ public class RedisConfiguration {
     }
 
     /**
-     * <h1>Carrega configuração armazenada no Redis</h1>
+     * Carrega configuração armazenada no Redis
      */
     public void setupInstance() {
         // Adciona a instância na lista de instâncias ativas
@@ -114,7 +114,7 @@ public class RedisConfiguration {
     }
 
     /**
-     * <h1>Carrega a configuração armazenada no Redis</h1>
+     * Carrega a configuração armazenada no Redis
      */
     public void loadConfiguration() {
         // Lista do UUID(String) dos jogadores com tell desativado

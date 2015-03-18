@@ -19,7 +19,7 @@ public class Redis {
     private static int port = 6379;
 
     /**
-     * <h1>Cria a conexão com o Redis</h1>
+     * Cria a conexão com o Redis
      */
     public static void initialize() {
         // JedisPool settings
@@ -48,7 +48,7 @@ public class Redis {
     }
 
     /**
-     * <h1>Retorna o Resource do Redis</h1>
+     * Retorna o Resource do Redis
      *
      * @return Jedis Resource
      */
@@ -57,7 +57,7 @@ public class Redis {
     }
 
     /**
-     * <h1>Retorna a JedisPool</h1>
+     * Retorna a JedisPool
      *
      * @return JedisPool
      */
