@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -38,8 +39,8 @@ public class RedisConfiguration {
     public static Set<String> instancesIDs;
     public static int globalCount;
 
-    public static Set<String> tellOff = new HashSet<String>();
-    public static Set<String> quoteOff = new HashSet<String>();
+    public static Set<UUID> tellOff = new HashSet<UUID>();
+    public static Set<UUID> quoteOff = new HashSet<UUID>();
     public static Set<String> whitelistedLobbys = new HashSet<String>();
     public static boolean isChatOff;
 

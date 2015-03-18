@@ -6,6 +6,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+import java.util.UUID;
+
 public class RedisListener implements Listener {
 
     private RedisManager plugin;
@@ -30,19 +32,21 @@ public class RedisListener implements Listener {
             String action = args[0].toLowerCase();
             ServerData.setChatState(action);
         } else if(channel.equals("turntell")) {
-            String name = args[0];
+            String stringUUID = args[0];
             String action = args[1].toLowerCase();
+            UUID uuid = UUID.fromString(stringUUID);
             if(action.equals("off"))
-                ServerData.addTellOff(name);
+                ServerData.addTellOff(uuid);
             else
-                ServerData.removeTellOff(name);
+                ServerData.removeTellOff(uuid);
         } else if(channel.equals("turnquote")) {
-            String name = args[0];
+            String stringUUID = args[0];
             String action = args[1].toLowerCase();
+            UUID uuid = UUID.fromString(stringUUID);
             if(action.equals("off"))
-                ServerData.addQuoteOff(name);
+                ServerData.addQuoteOff(uuid);
             else
-                ServerData.removeQuoteOff(name);
+                ServerData.removeQuoteOff(uuid);
         } else if(channel.equals("message")) {
             String name = args[0];
             String msg = args[1];
