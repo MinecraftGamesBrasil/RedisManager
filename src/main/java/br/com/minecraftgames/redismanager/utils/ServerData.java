@@ -8,6 +8,7 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * <h1>Utilidades referente a dados do BungeeCord</h1>
@@ -19,13 +20,18 @@ public class ServerData {
     /**
      * Lista de jogadores com tell desativado
      *
-     * @return Set de String com o UUID(String) dos jogadores com tell desativado
+     * @return Set de UUID com o UUID dos jogadores com tell desativado
      */
-    public static Set<String> getTellOff() {
+    public static Set<UUID> getTellOff() {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
-            return new HashSet<String>(rsc.smembers("config:tell-off"));
+            Set<UUID> uuids = new HashSet<UUID>();
+            for(String stringUUID : rsc.smembers("config:tell-off")) {
+                UUID uuid = UUID.fromString(stringUUID);
+                uuids.add(uuid);
+            }
+            return uuids;
         } catch (JedisConnectionException e) {
             pool.returnBrokenResource(rsc);
         } finally {
@@ -34,12 +40,17 @@ public class ServerData {
         return null;
     }
 
-    public static void addTellOff(String name) {
+    /**
+     * Adciona um jogador a lista de tell desativado
+     *
+     * @param UUID do jogador
+     */
+    public static void addTellOff(UUID uuid) {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
-            rsc.sadd("config:tell-off", name);
-            RedisConfiguration.tellOff.add(name);
+            rsc.sadd("config:tell-off", uuid.toString());
+            RedisConfiguration.tellOff.add(uuid.toString());
         } catch (JedisConnectionException e) {
             pool.returnBrokenResource(rsc);
         } finally {
@@ -47,12 +58,17 @@ public class ServerData {
         }
     }
 
-    public static void removeTellOff(String name) {
+    /**
+     * Remove um jogador da lista de tell desativado
+     *
+     * @param UUID do jogador
+     */
+    public static void removeTellOff(UUID uuid) {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
-            rsc.srem("config:tell-off", name);
-            RedisConfiguration.tellOff.remove(name);
+            rsc.srem("config:tell-off", uuid.toString());
+            RedisConfiguration.tellOff.remove(uuid.toString());
         } catch (JedisConnectionException e) {
             pool.returnBrokenResource(rsc);
         } finally {
@@ -63,13 +79,18 @@ public class ServerData {
     /**
      * Lista de jogadores com citações desativadas
      *
-     * @return Set de String com o UUID(String) dos jogadores com citações desativadas
+     * @return Set de String com o UUID dos jogadores com citações desativadas
      */
-    public static Set<String> getQuoteOff() {
+    public static Set<UUID> getQuoteOff() {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
-            return new HashSet<String>(rsc.smembers("config:quote-off"));
+            Set<UUID> uuids = new HashSet<UUID>();
+            for(String stringUUID : rsc.smembers("config:quote-off")) {
+                UUID uuid = UUID.fromString(stringUUID);
+                uuids.add(uuid);
+            }
+            return uuids;
         } catch (JedisConnectionException e) {
             pool.returnBrokenResource(rsc);
         } finally {
@@ -78,12 +99,17 @@ public class ServerData {
         return null;
     }
 
-    public static void addQuoteOff(String name) {
+    /**
+     * Adciona um jogador a lista de citações desativadas
+     *
+     * @param UUID do jogador
+     */
+    public static void addQuoteOff(UUID uuid) {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
-            rsc.sadd("config:quote-off", name);
-            RedisConfiguration.quoteOff.add(name);
+            rsc.sadd("config:quote-off", uuid.toString());
+            RedisConfiguration.quoteOff.add(uuid.toString());
         } catch (JedisConnectionException e) {
             pool.returnBrokenResource(rsc);
         } finally {
@@ -91,12 +117,17 @@ public class ServerData {
         }
     }
 
-    public static void removeQuoteOff(String name) {
+    /**
+     * Remove um jogador da lista de citações desativadas
+     *
+     * @param UUID do jogador
+     */
+    public static void removeQuoteOff(UUID uuid) {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
-            rsc.srem("config:quote-off", name);
-            RedisConfiguration.quoteOff.remove(name);
+            rsc.srem("config:quote-off", uuid.toString());
+            RedisConfiguration.quoteOff.remove(uuid.toString());
         } catch (JedisConnectionException e) {
             pool.returnBrokenResource(rsc);
         } finally {
@@ -122,6 +153,11 @@ public class ServerData {
         return null;
     }
 
+    /**
+     * Adciona um lobby a whitelist
+     *
+     * @param lobby
+     */
     public static void addLobbyToWhitelist(String lobby) {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
@@ -135,6 +171,11 @@ public class ServerData {
         }
     }
 
+    /**
+     * Retira um lobby da whitelist
+     *
+     * @param lobby
+     */
     public static void removeLobbyFromWhitelist(String lobby) {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
@@ -166,6 +207,11 @@ public class ServerData {
         return false;
     }
 
+    /**
+     * Altera o status do chat global
+     *
+     * @param Novo status
+     */
     public static void setChatState(String state) {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
