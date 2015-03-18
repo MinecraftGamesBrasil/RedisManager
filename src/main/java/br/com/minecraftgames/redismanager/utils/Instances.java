@@ -1,4 +1,4 @@
-package br.com.minecraftgames.redismanager.br.com.minecraftgames.redismanager.utils;
+package br.com.minecraftgames.redismanager.utils;
 
 import br.com.minecraftgames.redismanager.Redis;
 import br.com.minecraftgames.redismanager.RedisConfiguration;
