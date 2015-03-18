@@ -7,6 +7,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * <h1>Utilidades referente a instâncias</h1>
@@ -52,5 +53,45 @@ public class Instances {
             pool.returnResource(rsc);
         }
         return 0;
+    }
+
+    /**
+     * Limpa os dados atuais da instância, armazenados no Redis
+     */
+    public static void cleanUpInstance() {
+        JedisPool pool = Redis.getPool();
+        Jedis rsc = pool.getResource();
+        try {
+            for(String stringUUID : rsc.smembers("server:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnline")) {
+                UUID uuid = UUID.fromString(stringUUID);
+                cleanUpPlayer(uuid);
+            }
+            rsc.set("server:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":heartbeats", "0");
+        } catch (JedisConnectionException e) {
+            pool.returnBrokenResource(rsc);
+        } finally {
+            pool.returnResource(rsc);
+        }
+    }
+
+    /**
+     * Limpa os dados atuais do jogador, armazenados no Redis.
+     *
+     * @param UUID do jogador
+     */
+    public static void cleanUpPlayer(UUID uuid) {
+        JedisPool pool = Redis.getPool();
+        Jedis rsc = pool.getResource();
+        try {
+            rsc.srem("server:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnline", uuid.toString());
+            if(rsc.hexists("player:" + uuid.toString(), "online") && Long.parseLong(rsc.hget("player:" + uuid.toString(), "online")) == 0L)
+                rsc.hset("player:" + uuid.toString(), "online", rsc.get("server:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":heartbeats"));
+            rsc.hdel("player:" + uuid.toString(), "proxy");
+            rsc.hdel("player:" + uuid.toString(), "server");
+        } catch (JedisConnectionException e) {
+            pool.returnBrokenResource(rsc);
+        } finally {
+            pool.returnResource(rsc);
+        }
     }
 }

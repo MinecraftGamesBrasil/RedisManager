@@ -1,6 +1,7 @@
 package br.com.minecraftgames.redismanager;
 
 import br.com.minecraftgames.redismanager.pubsub.PubSubListener;
+import br.com.minecraftgames.redismanager.utils.Instances;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.util.concurrent.ExecutorService;
@@ -28,6 +29,9 @@ public class RedisManager extends Plugin {
         // Inicia conexão com o Redis
         Redis.initialize();
 
+        // Limpa os dados atuais da instância, armazenados no Redis
+        Instances.cleanUpInstance();
+
         // Inicia todos as variáveis relativas ao Redis
         configuration = new RedisConfiguration(this);
 
@@ -48,6 +52,9 @@ public class RedisManager extends Plugin {
 
         // Registra o canal do plugin no Bungee
         getProxy().registerChannel("RedisManager");
+
+        // Registra o Listener
+        getProxy().getPluginManager().registerListener(this, new RedisListener(this));
     }
 
     public void onDisable() {

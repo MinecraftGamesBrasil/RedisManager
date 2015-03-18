@@ -38,10 +38,10 @@ public class RedisConfiguration {
     public static Set<String> instancesIDs;
     public static int globalCount;
 
-    public Set<String> tellOff = new HashSet<String>();
-    public Set<String> quoteOff = new HashSet<String>();
-    public Set<String> whitelistedLobbys = new HashSet<String>();
-    public boolean isChatOff;
+    public static Set<String> tellOff = new HashSet<String>();
+    public static Set<String> quoteOff = new HashSet<String>();
+    public static Set<String> whitelistedLobbys = new HashSet<String>();
+    public static boolean isChatOff;
 
     /**
      * Registra o ID da instancia no Redis
