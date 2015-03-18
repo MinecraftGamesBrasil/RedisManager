@@ -5,40 +5,63 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
+/**
+ * <h1>Atalhos para funções do Redis</h1>
+ *
+ * @author Ramon, Lucas
+ */
 public class Redis {
 
-	private static JedisPool pool;
+    private static JedisPool pool;
 
-	private static String server = "172.16.0.1";
-	private static int port = 6379;
-	private static String password = "HoLz";
+    // Dados do banco de dados
+    private static String server = "172.16.0.11";
+    private static int port = 6379;
 
-	public static void initialize() {
-		pool = createConnection();
-	}
+    /**
+     * <h1>Cria a conexão com o Redis</h1>
+     */
+    public static void initialize() {
+        // JedisPool settings
+        JedisPoolConfig config = new JedisPoolConfig();
+        config.setMaxTotal(8);
+        config.setJmxEnabled(false);
+        JedisPool jedisPool = new JedisPool(config, server, port, 0);
 
-	private static JedisPool createConnection() {
-		JedisPool pool = new JedisPool(new JedisPoolConfig(), server, port, 2000, password);
-		Jedis rsc = null;
-		try {
-			rsc = (Jedis) pool.getResource();
-			rsc.exists(String.valueOf(System.currentTimeMillis()));
-		} catch(JedisConnectionException e) {
-			e.printStackTrace();
-		} finally {
-			if(rsc != null && pool != null)
-				pool.returnResource(rsc);
-		}
-		return pool;
-	}
+        Jedis rsc = null;
+        try {
+            rsc = jedisPool.getResource();
+            // Tests the connection
+            rsc.ping();
+        } catch (JedisConnectionException e) {
+            if (rsc != null)
+                jedisPool.returnBrokenResource(rsc);
+            jedisPool.destroy();
+            jedisPool = null;
+            rsc = null;
+            throw e;
+        } finally {
+            if (rsc != null && jedisPool != null)
+                jedisPool.returnResource(rsc);
+        }
+        pool = jedisPool;
+    }
 
-	public static Jedis getResource() {
-		Jedis rsc = null;
-		rsc = (Jedis) pool.getResource();
-		return rsc;
-	}
+    /**
+     * <h1>Retorna o Resource do Redis</h1>
+     *
+     * @return Jedis Resource
+     */
+    public static Jedis getResource() {
+        return pool.getResource();
+    }
 
-	public static JedisPool getPool() {
-		return pool;
-	}
+    /**
+     * <h1>Retorna a JedisPool</h1>
+     *
+     * @return JedisPool
+     */
+    public static JedisPool getPool() {
+        return pool;
+    }
 }
