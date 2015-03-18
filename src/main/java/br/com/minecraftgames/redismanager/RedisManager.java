@@ -2,6 +2,9 @@ package br.com.minecraftgames.redismanager;
 
 import br.com.minecraftgames.redismanager.pubsub.PubSubListener;
 import br.com.minecraftgames.redismanager.utils.Instances;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.util.concurrent.ExecutorService;
@@ -22,6 +25,8 @@ public class RedisManager extends Plugin {
     public static RedisManagerAPI api;
     public static ExecutorService service;
     public static PubSubListener psl;
+
+    public static boolean allowConnections;
 
     public void onEnable() {
         plugin = this;
@@ -50,14 +55,19 @@ public class RedisManager extends Plugin {
             }
         });
 
-        // Registra o canal do plugin no Bungee
-        getProxy().registerChannel("RedisManager");
-
         // Registra o Listener
         getProxy().getPluginManager().registerListener(this, new RedisListener(this));
+
+        // Libera a instância para receber conexões de jogadores
+        allowConnections = true;
     }
 
     public void onDisable() {
 
+    }
+
+    public static BaseComponent[] convert(String message) {
+        BaseComponent[] text = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', message.replaceAll("(&)\\1{1,}", "$1")));
+        return text;
     }
 }

@@ -1,6 +1,7 @@
 package br.com.minecraftgames.redismanager.utils;
 
 import br.com.minecraftgames.redismanager.Redis;
+import br.com.minecraftgames.redismanager.RedisConfiguration;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -33,6 +34,32 @@ public class ServerData {
         return null;
     }
 
+    public static void addTellOff(String name) {
+        JedisPool pool = Redis.getPool();
+        Jedis rsc = pool.getResource();
+        try {
+            rsc.sadd("config:tell-off", name);
+            RedisConfiguration.tellOff.add(name);
+        } catch (JedisConnectionException e) {
+            pool.returnBrokenResource(rsc);
+        } finally {
+            pool.returnResource(rsc);
+        }
+    }
+
+    public static void removeTellOff(String name) {
+        JedisPool pool = Redis.getPool();
+        Jedis rsc = pool.getResource();
+        try {
+            rsc.srem("config:tell-off", name);
+            RedisConfiguration.tellOff.remove(name);
+        } catch (JedisConnectionException e) {
+            pool.returnBrokenResource(rsc);
+        } finally {
+            pool.returnResource(rsc);
+        }
+    }
+
     /**
      * Lista de jogadores com citações desativadas
      *
@@ -49,6 +76,32 @@ public class ServerData {
             pool.returnResource(rsc);
         }
         return null;
+    }
+
+    public static void addQuoteOff(String name) {
+        JedisPool pool = Redis.getPool();
+        Jedis rsc = pool.getResource();
+        try {
+            rsc.sadd("config:quote-off", name);
+            RedisConfiguration.quoteOff.add(name);
+        } catch (JedisConnectionException e) {
+            pool.returnBrokenResource(rsc);
+        } finally {
+            pool.returnResource(rsc);
+        }
+    }
+
+    public static void removeQuoteOff(String name) {
+        JedisPool pool = Redis.getPool();
+        Jedis rsc = pool.getResource();
+        try {
+            rsc.srem("config:quote-off", name);
+            RedisConfiguration.quoteOff.remove(name);
+        } catch (JedisConnectionException e) {
+            pool.returnBrokenResource(rsc);
+        } finally {
+            pool.returnResource(rsc);
+        }
     }
 
     /**
@@ -69,6 +122,32 @@ public class ServerData {
         return null;
     }
 
+    public static void addLobbyToWhitelist(String lobby) {
+        JedisPool pool = Redis.getPool();
+        Jedis rsc = pool.getResource();
+        try {
+            rsc.sadd("config:whitelisted-lobbys", lobby);
+            RedisConfiguration.whitelistedLobbys.add(lobby);
+        } catch (JedisConnectionException e) {
+            pool.returnBrokenResource(rsc);
+        } finally {
+            pool.returnResource(rsc);
+        }
+    }
+
+    public static void removeLobbyFromWhitelist(String lobby) {
+        JedisPool pool = Redis.getPool();
+        Jedis rsc = pool.getResource();
+        try {
+            rsc.srem("config:whitelisted-lobbys", lobby);
+            RedisConfiguration.whitelistedLobbys.remove(lobby);
+        } catch (JedisConnectionException e) {
+            pool.returnBrokenResource(rsc);
+        } finally {
+            pool.returnResource(rsc);
+        }
+    }
+
     /**
      * Status atual do chat normal
      *
@@ -85,5 +164,23 @@ public class ServerData {
             pool.returnResource(rsc);
         }
         return false;
+    }
+
+    public static void setChatState(String state) {
+        JedisPool pool = Redis.getPool();
+        Jedis rsc = pool.getResource();
+        try {
+            if(state.equalsIgnoreCase("off")) {
+                rsc.set("config:chat-off", "true");
+                RedisConfiguration.isChatOff = true;
+            } else {
+                rsc.del("config:chat-off");
+                RedisConfiguration.isChatOff = false;
+            }
+        } catch (JedisConnectionException e) {
+            pool.returnBrokenResource(rsc);
+        } finally {
+            pool.returnResource(rsc);
+        }
     }
 }
