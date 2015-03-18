@@ -1,5 +1,6 @@
 package br.com.minecraftgames.redismanager;
 
+import br.com.minecraftgames.redismanager.pubsub.PubSubListener;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.util.concurrent.ExecutorService;
@@ -16,10 +17,10 @@ public class RedisManager extends Plugin {
 
     public static RedisManager plugin;
 
-    public RedisConfiguration configuration;
-    public RedisManagerAPI api;
-    public ExecutorService service;
-    public PubSubListener psl;
+    public static RedisConfiguration configuration;
+    public static RedisManagerAPI api;
+    public static ExecutorService service;
+    public static PubSubListener psl;
 
     public void onEnable() {
         plugin = this;
@@ -41,6 +42,7 @@ public class RedisManager extends Plugin {
             @Override
             public void run() {
                 service = Executors.newFixedThreadPool(16);
+                service.submit(psl);
             }
         });
 
