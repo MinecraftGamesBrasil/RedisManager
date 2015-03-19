@@ -2,9 +2,11 @@ package br.com.minecraftgames.redismanager;
 
 import br.com.minecraftgames.redismanager.pubsub.PubSubListener;
 import br.com.minecraftgames.redismanager.utils.Instances;
+import br.com.minecraftgames.redismanager.utils.PlayerData;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.util.concurrent.ExecutorService;
@@ -69,7 +71,25 @@ public class RedisManager extends Plugin {
      * Funções realizadas quando o servidor fechar
      */
     public void onDisable() {
+        // Bloqueia a conexão de jogadores
+        allowConnections = false;
 
+        // Removendo os dados dos jogadores online
+        for(ProxiedPlayer player : getProxy().getPlayers()) {
+            PlayerData.gracefulLogout(player);
+        }
+
+        // Remove o listener
+        getProxy().getPluginManager().unregisterListeners(this);
+
+        // Desliga todas as tasks
+        getProxy().getScheduler().cancel(this);
+
+        // Finaliza o ExecutorService
+        service.shutdownNow();
+
+        // Desliga a conexão com Redis
+        Redis.getPool().destroy();
     }
 
     /**

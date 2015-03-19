@@ -3,6 +3,7 @@ package br.com.minecraftgames.redismanager;
 import br.com.minecraftgames.redismanager.pubsub.PubSubMessageEvent;
 import br.com.minecraftgames.redismanager.utils.ServerData;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -19,6 +20,18 @@ public class RedisListener implements Listener {
 
     public RedisListener(RedisManager instance) {
         this.plugin = instance;
+    }
+
+    /**
+     * PlayerPreLogin event
+     *
+     * @param event PreLoginEvent
+     */
+    @EventHandler
+    public void onPlayerPreLogin(PreLoginEvent event) {
+        // Bloqueia a conexão de jogadores, se necessário
+        if(!RedisManager.allowConnections)
+            event.setCancelled(true);
     }
 
     /**
