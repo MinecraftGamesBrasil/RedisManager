@@ -52,7 +52,7 @@ public class ProcessorManager {
                 }
             };
         }
-        plugin.getExecutorService().submit(processableEvent);
+        plugin.getService().submit(processableEvent);
     }
 
     private void processLogIn(ProxiedPlayer player) {

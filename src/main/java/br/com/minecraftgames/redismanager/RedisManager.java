@@ -1,5 +1,6 @@
 package br.com.minecraftgames.redismanager;
 
+import br.com.minecraftgames.redismanager.processor.ProcessorListener;
 import br.com.minecraftgames.redismanager.processor.ProcessorManager;
 import br.com.minecraftgames.redismanager.pubsub.PubSubListener;
 import br.com.minecraftgames.redismanager.utils.Instances;
@@ -65,8 +66,9 @@ public class RedisManager extends Plugin {
             }
         });
 
-        // Registra o Listener
+        // Registra os Listeners
         getProxy().getPluginManager().registerListener(this, new RedisListener(this));
+        getProxy().getPluginManager().registerListener(this, new ProcessorListener());
 
         // Libera a instância para receber conexões de jogadores
         allowConnections = true;
@@ -104,8 +106,7 @@ public class RedisManager extends Plugin {
      * @return Mensagem(ChatComponent)
      */
     public static BaseComponent[] convert(String message) {
-        BaseComponent[] text = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', message.replaceAll("(&)\\1{1,}", "$1")));
-        return text;
+        return TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', message.replaceAll("(&)\\1{1,}", "$1")));
     }
 
     /**
@@ -113,8 +114,7 @@ public class RedisManager extends Plugin {
      *
      * @return ExecutorService
      */
-    @Override
-    public ExecutorService getExecutorService() {
+    public ExecutorService getService() {
         return service;
     }
 }
