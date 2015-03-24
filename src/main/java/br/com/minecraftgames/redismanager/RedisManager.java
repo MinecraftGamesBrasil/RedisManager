@@ -1,5 +1,6 @@
 package br.com.minecraftgames.redismanager;
 
+import br.com.minecraftgames.redismanager.processor.ProcessorManager;
 import br.com.minecraftgames.redismanager.pubsub.PubSubListener;
 import br.com.minecraftgames.redismanager.utils.Instances;
 import br.com.minecraftgames.redismanager.utils.PlayerData;
@@ -24,6 +25,7 @@ public class RedisManager extends Plugin {
     public static RedisManager plugin;
 
     public static RedisConfiguration configuration;
+    public static ProcessorManager processor;
     public static RedisManagerAPI api;
     public static ExecutorService service;
     public static PubSubListener psl;
@@ -44,6 +46,9 @@ public class RedisManager extends Plugin {
 
         // Inicia todos as variáveis relativas ao Redis
         configuration = new RedisConfiguration(this);
+
+        // Inicia o processador de dados para o Redis
+        processor = new ProcessorManager(this);
 
         // Inicia a API
         api = new RedisManagerAPI(this);
@@ -101,5 +106,15 @@ public class RedisManager extends Plugin {
     public static BaseComponent[] convert(String message) {
         BaseComponent[] text = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', message.replaceAll("(&)\\1{1,}", "$1")));
         return text;
+    }
+
+    /**
+     * Retorna o ExecutorService, sobrepondo o default do bungee
+     *
+     * @return ExecutorService
+     */
+    @Override
+    public ExecutorService getExecutorService() {
+        return service;
     }
 }
