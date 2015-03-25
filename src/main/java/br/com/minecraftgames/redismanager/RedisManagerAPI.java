@@ -11,14 +11,32 @@ import java.net.InetAddress;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * <h1>API de funções</h1>
+ * API com todas as funções que serão usadas por outro plugin
+ *
+ * @author Ramon, Lucas
+ */
 public class RedisManagerAPI {
 
     private RedisManager plugin;
 
+    /**
+     * Construtor da API
+     *
+     * @param instance Instância da main class do plugin
+     */
     public RedisManagerAPI(RedisManager instance) {
         this.plugin = instance;
     }
 
+    /**
+     * Publica alguma mensagem no PubSub do redis
+     * Uso interno da classe
+     *
+     * @param channel Canal da publicação
+     * @param message Mensagem a ser publicada
+     */
     private final static void publish(String channel, String message) {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
@@ -31,140 +49,313 @@ public class RedisManagerAPI {
         }
     }
 
+    /**
+     * Soma de jogadores online em todas as instâncias
+     *
+     * @return Int com o número de jogadores
+     */
     public final static int getPlayerCount() {
         return RedisConfiguration.globalCount;
     }
 
+    /**
+     * Retorna o tempo em MS(long) do último logout do jogador
+     *
+     * @param uuid UUID do jogador
+     * @return {@code 0} caso o jogador esteja online, {@code -1} caso o jogador nunca tenha entrado ou o MS do último logout
+     */
     public final static long getLastOnline(UUID uuid) {
         return PlayerData.getLastOnline(uuid);
     }
 
+    /**
+     * Retorna o server do BungeeCord em que o jogador, de qualquer instância, está conectado
+     *
+     * @param uuid UUID do jogador
+     * @return ServerInfo do server do BungeeCord
+     */
     public final static ServerInfo getBungeeServerFor(UUID uuid) {
         return PlayerData.getBungeeServerFor(uuid);
     }
 
+    /**
+     * Retorna a instância do BungeeCord em que o jogador está conectado
+     *
+     * @param uuid UUID do jogador
+     * @return String no formato: {@code bungeeX}, onde {@code X} representa o número da instância
+     */
     public final static String getInstanceFor(UUID uuid) {
         return PlayerData.getInstanceFor(uuid);
     }
 
+    /**
+     * Retorna um set contendo os jogadores que estão conectados em todas as instâncias
+     *
+     * @return Set de UUID dos jogadores
+     */
     public final static Set<UUID> getPlayersOnline() {
         return PlayerData.getPlayers();
     }
 
+    /**
+     * Retorna um set contendo os jogadores contectados em determinada instância
+     *
+     * @param instance Instância
+     * @return Set de UUID dos jogadores da instância
+     */
     public final static Set<UUID> getPlayersOnInstance(String instance) {
         return PlayerData.getPlayersOnInstance(instance);
     }
 
+    /**
+     * Verifica se um jogador está online em alguma instância
+     *
+     * @param uuid UUID do jogador
+     * @return {@code true} para online e {@code false} para offline
+     */
     public final static boolean isPlayerOnline(UUID uuid) {
         return PlayerData.isPlayerOnline(uuid);
     }
 
+    /**
+     * Retorna o IP de um jogador que esteja em qualquer instância
+     *
+     * @param uuid UUID do jogador
+     * @return InetAddress do jogador
+     */
     public final static InetAddress getPlayerIp(UUID uuid) {
         return PlayerData.getIpAddress(uuid);
     }
 
-    public final static String getServerId() {
+    /**
+     * Instância que está rodando
+     *
+     * @return String no formato: {@code bungeeX}, onde {@code X} representa o número da instância
+     */
+    public final static String getInstance() {
         return RedisConfiguration.BUNGEE + RedisConfiguration.instanceID;
     }
 
-    public final static int getServerIntId() {
+    /**
+     * ID da instância que está rodando
+     *
+     * @return int com o ID da instância
+     */
+    public final static int getInstanceID() {
         return RedisConfiguration.instanceID;
     }
 
+    /**
+     * Instâncias ativas
+     *
+     * @return Set de String no formato: {@code bungeeX}, onde {@code X} representa o número da instância
+     */
     public final static Set<String> getAllServers() {
         return RedisConfiguration.instancesIDs;
     }
 
+    /**
+     * Retorna jogadores com o tell desativado
+     *
+     * @return Set de UUID dos jogadores
+     */
     public final static Set<UUID> getTellOff() {
         return RedisConfiguration.tellOff;
     }
 
+    /**
+     * Retorna jogadores com o citações desativadas
+     *
+     * @return Set de UUID dos jogadores
+     */
     public final static Set<UUID> getQuoteOff() {
         return RedisConfiguration.quoteOff;
     }
 
+    /**
+     * Verifica o status atual do chat normal
+     *
+     * @return {@code true} para ativo e {@code false} para desativado
+     */
     public final static boolean isChatOff() {
         return RedisConfiguration.isChatOff;
     }
 
+    /**
+     * Retorna os lobbys que estão em manutenção
+     *
+     * @return Set de String no formato: {@code lobbyX}, onde {@code X} representa o número do lobby
+     */
     public final static Set<String> getWhitelistedLobbys() {
         return ServerData.getWhitelistedLobbys();
     }
 
-    public final static void sendToChannel(String channelName, String channelTag, String playerTag, String playerName, String messageDeafultColor, String message) {
-        publish("sendtochannel", channelName + "%=%" + channelTag + "%=%" + playerTag + "%=%" + playerName + "%=%" + messageDeafultColor + "%=%" + message);
+    /**
+     * Envia uma mensagem em um canal
+     *
+     * @param channelName Nome do canal onde a mensagem será enviada
+     * @param channelTag {@code true} para mostrar tag do canal e {@code false} para escondê-la
+     * @param playerTag Tag do jogador. {@code null} esconde a tag do jogador
+     * @param playerName Nome do jogador. {@code null} esconde o nome do jogador
+     * @param messageDeafultColor Cor padrão da mensagem. {@code null} utilizará a cor padrão
+     * @param message Mensagem a ser enviada
+     */
+    public final static void sendToChannel(String channelName, boolean channelTag, String playerTag, String playerName, String messageDeafultColor, String message) {
+        publish("sendtochannel", channelName + "%=%" + String.valueOf(channelTag) + "%=%" + playerTag + "%=%" + playerName + "%=%" + messageDeafultColor + "%=%" + message);
     }
 
-    public final static void sendToPlayer(String player, String message) {
-        publish("sendtoplayer", player + "%=%" + message);
+    /**
+     * Envia uma mensagem direcionada a um jogador
+     *
+     * @param uuid UUID do jogador
+     * @param message Mensagem a ser enviada
+     */
+    public final static void sendToPlayer(UUID uuid, String message) {
+        publish("sendtoplayer", uuid.toString() + "%=%" + message);
     }
 
-    public final static void ban(String player, String by, int time, String reason) {
-        publish("ban", player + "%=%" + by + "%=%" + time + "%=%" + reason);
+    /**
+     * Comunica o ban de um jogador à todas as instâncias
+     *
+     * @param uuid UUID do jogador
+     * @param punisher Nome do staffer que baniu
+     * @param time Tempo de duração do ban
+     * @param reason Motivo do ban
+     */
+    public final static void ban(UUID uuid, String punisher, int time, String reason) {
+        publish("ban", uuid.toString() + "%=%" + punisher + "%=%" + time + "%=%" + reason);
     }
 
-    public final static void kick(String player, String by, String reason) {
-        publish("kick", player + "%=%" + by + "%=%" + reason);
+    /**
+     * Comunica o kick de um jogador à todas as instâncias
+     *
+     * @param uuid UUID do jogador
+     * @param punisher Nome do staffer que kickou
+     * @param reason Motivo do kick
+     */
+    public final static void kick(UUID uuid, String punisher, String reason) {
+        publish("kick", uuid.toString() + "%=%" + punisher + "%=%" + reason);
     }
 
-    public final static void mute(String player, String by, int time, String reason) {
-        publish("mute", player + "%=%" + by + "%=%" + time + "%=%" + reason);
+    /**
+     * Comunica o mute de um jogador à todas as instâncias
+     *
+     * @param uuid UUID do jogador
+     * @param punisher Nome do staffer que mutou
+     * @param time Tempo do mute
+     * @param reason Motivo do mute
+     */
+    public final static void mute(UUID uuid, String punisher, int time, String reason) {
+        publish("mute", uuid.toString() + "%=%" + punisher + "%=%" + time + "%=%" + reason);
     }
 
-    public final static void unban(String player, String name) {
-        publish("unban", player + "%=%" + name);
+    /**
+     * Comunica o unban de um jogador à todas as instâncias
+     *
+     * @param uuid UUID do jogador
+     * @param staffer Nome do staffer que deu o unban
+     */
+    public final static void unban(UUID uuid, String staffer) {
+        publish("unban", uuid.toString() + "%=%" + staffer);
     }
 
-    public final static void unmute(String player, String name) {
-        publish("unmute", player + "%=%" + name);
+    /**
+     * Comunica o unmute de um jogador à todas as instâncias
+     *
+     * @param uuid UUID do jogador
+     * @param staffer Nome do staffer que deu o unmute
+     */
+    public final static void unmute(UUID uuid, String staffer) {
+        publish("unmute", uuid.toString() + "%=%" + staffer);
     }
 
+    /**
+     * Altera o status do chat normal
+     *
+     * @param to Novo status: {@code on} para ativar e {@code off} para desativar
+     */
     public final static void turnChat(String to) {
         publish("turnchat", to);
     }
 
-    public final static void reloadGroups() {
-        publish("reloadgroups", "true");
+    /**
+     * Avisa à todas as instâncias para recarregarem o cache de um setor
+     *
+     * @param sector Setor a ser recarregado
+     */
+    public final static void reload(String sector) {
+        publish("reload", sector);
     }
 
-    public final static void reloadConfig() {
-        publish("reloadconfig", "true");
+    /**
+     * Altera o status do tell de um jogador
+     *
+     * @param uuid UUID do jogador
+     * @param to Novo status: {@code on} para ativar e {@code off} para desativar
+     */
+    public final static void turnTell(UUID uuid, String to) {
+        publish("turntell", uuid.toString() + "%=%" + to);
     }
 
-    public final static void reloadExecutors() {
-        publish("reloadexecutors", "true");
+    /**
+     * Altera o status das citações de um jogador
+     *
+     * @param uuid UUID do jogador
+     * @param to Novo status: {@code on} para ativar e {@code off} para desativar
+     */
+    public final static void turnQuote(UUID uuid, String to) {
+        publish("turnquote", uuid.toString() + "%=%" + to);
     }
 
-    public final static void reloadAM() {
-        publish("reloadam", "");
+    /**
+     * Altera o status de bloqueio de algum lobby
+     *
+     * @param lobby Lobby a ser alterado, no formato: {@code lobbyX}, onde {@code X} representa o número do lobby
+     * @param to Novo status: {@code add} adciona ou {@code del} deleta um lobby a lista de lobbys bloqueados
+     */
+    public final static void whitelistedLobby(String lobby, String to) {
+        publish("whitelistedlobby", lobby + "%=%" + to);
     }
 
-    public final static void turnTell(String name, String to) {
-        publish("turntell", name + "%=%" + to);
+    /**
+     * Envia uma mensagem privada para um jogador
+     *
+     * @param from UUID do jogador que está enviando a mensagem privada
+     * @param to Nome do jogador que irá receber a mensagem
+     * @param message Mensagem a ser enviada
+     */
+    public final static void tell(UUID from, String to, String message) {
+        publish("tell", from.toString() + "%=%" + to + "%=%" + message);
     }
 
-    public final static void turnQuote(String name, String to) {
-        publish("turnquote", name + "%=%" + to);
+    /**
+     * Envia um ou mais jogadores para um servidor específico do BungeeCord
+     *
+     * @param uuids Set de UUID dos jogadores
+     * @param target servidor destino do BungeeCord
+     * @param message {@code true} envia a mensagem ao jogador, enquanto {@code false} realiza a operação silenciosamente
+     */
+    public final static void send(Set<UUID> uuids, String target, boolean message) {
+        for(UUID uuid : uuids)
+            publish("send", uuid.toString() + "%=%" + target + "%=%" + String.valueOf(message));
     }
 
-    public final static void whitelistedLobby(String lobby, String action) {
-        publish("whitelistedlobby", lobby + "%=%" + action);
+    /**
+     * Atualiza a sidebar de um jogador específico
+     *
+     * @param uuid UUID do jogador
+     */
+    public final static void updateSidebar(UUID uuid) {
+        publish("updatesidebar", uuid.toString());
     }
 
-    public final static void tell(String from, String to, String message) {
-        publish("tell", from + "%=%" + to + "%=%" + message);
-    }
-
-    public final static void send(String player, String target, boolean message) {
-        publish("send", player + "%=%" + target + "%=%" + (message ? "true" : "false"));
-    }
-
-    public final static void updateSidebar(String name) {
-        publish("updatesidebar", name);
-    }
-
-    public final static void warnQuote(String quoted) {
-        publish("warnquote", quoted);
+    /**
+     * Envia a notificação sonora de um quote à um jogador
+     *
+     * @param uuid UUID do jogador
+     */
+    public final static void warnQuote(UUID uuid) {
+        publish("warnquote", uuid.toString());
     }
 
 }

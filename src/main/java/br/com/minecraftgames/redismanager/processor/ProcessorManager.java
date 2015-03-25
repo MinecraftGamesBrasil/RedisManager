@@ -16,16 +16,33 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 import java.net.InetAddress;
 import java.util.UUID;
 
+/**
+ * <h1>Processa a entrada de dados no Redis</h1>
+ *
+ * @author Ramon, Lucas
+ */
 public class ProcessorManager {
 
     private RedisManager plugin;
 
+    /**
+     * Construtor do processador
+     *
+     * @param instance Instância da main class do plugin
+     */
     public ProcessorManager(RedisManager instance) {
         this.plugin = instance;
     }
 
+    /**
+     * Processa um evento
+     *
+     * @param processorEvent Evento
+     */
     public void process(ProcessorEvent processorEvent) {
         Runnable processableEvent = null;
+
+        // Caso o evento seja do tipo LogIn
         if(processorEvent instanceof PlayerLoggedInEvent) {
             final PlayerLoggedInEvent event = (PlayerLoggedInEvent) processorEvent;
             processableEvent = new Runnable() {
@@ -34,7 +51,10 @@ public class ProcessorManager {
                     processLogIn(player);
                 }
             };
-        } else if(processorEvent instanceof PlayerLoggedOffEvent) {
+        }
+
+        // Caso o evento seja do tipo LogOff
+        else if(processorEvent instanceof PlayerLoggedOffEvent) {
             final PlayerLoggedOffEvent event = (PlayerLoggedOffEvent) processorEvent;
             processableEvent = new Runnable() {
                 public void run() {
@@ -42,7 +62,10 @@ public class ProcessorManager {
                     processLogOff(player);
                 }
             };
-        } else if(processorEvent instanceof PlayerChangedServerEvent) {
+        }
+
+        // Caso o evento seja do tipo ChangeServer
+        else if(processorEvent instanceof PlayerChangedServerEvent) {
             final PlayerChangedServerEvent event = (PlayerChangedServerEvent) processorEvent;
             processableEvent = new Runnable() {
                 public void run() {
@@ -52,9 +75,16 @@ public class ProcessorManager {
                 }
             };
         }
+
+        // Passa a ação para o ExecutorService
         plugin.getService().submit(processableEvent);
     }
 
+    /**
+     * Processa o evento de LogIn
+     *
+     * @param player ProxiedPlayer do jogador que entrou
+     */
     private void processLogIn(ProxiedPlayer player) {
         UUID uuid = player.getUniqueId();
         String name = player.getName();
@@ -62,7 +92,10 @@ public class ProcessorManager {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
+            // Adiciona o jogador a lista de jogadores online
             rsc.sadd("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnline", uuid.toString());
+
+            // Altera dados do jogador no Redis
             rsc.hset("player:" + uuid.toString(), "name", name);
             rsc.hset("player:" + uuid.toString(), "instance", RedisConfiguration.BUNGEE + RedisConfiguration.instanceID);
             rsc.hset("player:" + uuid.toString(), "online", "0");
@@ -74,12 +107,20 @@ public class ProcessorManager {
         }
     }
 
+    /**
+     * Processa o evento de LogOff
+     *
+     * @param player ProxiedPlayer do jogador que saiu
+     */
     private void processLogOff(ProxiedPlayer player) {
         UUID uuid = player.getUniqueId();
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
+            // Remove o jogador da lista de jogadores online
             rsc.srem("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnline", uuid.toString());
+
+            // Salva o momento do último login do jogador
             rsc.hset("player:" + uuid.toString(), "online", String.valueOf(System.currentTimeMillis()));
         } catch (JedisConnectionException e) {
             pool.returnBrokenResource(rsc);
@@ -88,6 +129,12 @@ public class ProcessorManager {
         }
     }
 
+    /**
+     * Processa o evento de ChangeServer
+     *
+     * @param player ProxiedPlayer do jogador que trocou de server
+     * @param server Servidor, do BungeeCord, destino do jogador
+     */
     private void processChangeServer(ProxiedPlayer player, ServerInfo server) {
         UUID uuid = player.getUniqueId();
         JedisPool pool = Redis.getPool();

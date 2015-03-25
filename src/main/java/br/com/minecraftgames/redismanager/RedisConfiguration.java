@@ -25,6 +25,11 @@ public class RedisConfiguration {
 
     private RedisManager plugin;
 
+    /**
+     * Construtor da classe de configuração
+     *
+     * @param instance Instância da main class do plugin
+     */
     public RedisConfiguration(RedisManager instance) {
         this.plugin = instance;
 
