@@ -92,8 +92,10 @@ public class ProcessorManager {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
-            // Adiciona o jogador a lista de jogadores online
-            rsc.sadd("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnline", uuid.toString());
+            // Adiciona o jogador a lista de jogadores online (UUID)
+            rsc.sadd("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineUUID", uuid.toString());
+            // Adiciona o jogador a lista de jogadores online (Name)
+            rsc.sadd("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineName", name);
 
             // Altera dados do jogador no Redis
             rsc.hset("player:" + uuid.toString(), "name", name);
@@ -114,11 +116,14 @@ public class ProcessorManager {
      */
     private void processLogOff(ProxiedPlayer player) {
         UUID uuid = player.getUniqueId();
+        String name = player.getName();
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
-            // Remove o jogador da lista de jogadores online
-            rsc.srem("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnline", uuid.toString());
+            // Remove o jogador da lista de jogadores online (UUID)
+            rsc.srem("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineUUID", uuid.toString());
+            // Remove o jogador da lista de jogadores online (Name)
+            rsc.srem("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineName", uuid.toString());
 
             // Salva o momento do último login do jogador
             rsc.hset("player:" + uuid.toString(), "online", String.valueOf(System.currentTimeMillis()));

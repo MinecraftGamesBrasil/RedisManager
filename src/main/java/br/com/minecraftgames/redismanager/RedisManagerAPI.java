@@ -91,10 +91,29 @@ public class RedisManagerAPI {
     /**
      * Retorna um set contendo os jogadores que estão conectados em todas as instâncias
      *
+     * @return Set de String com nick dos jogadores
+     */
+    public final static Set<String> getPlayersOnlineByName() {
+        return PlayerData.getPlayersByName();
+    }
+
+    /**
+     * Retorna um set contendo os jogadores que estão conectados em todas as instâncias
+     *
      * @return Set de UUID dos jogadores
      */
     public final static Set<UUID> getPlayersOnline() {
         return PlayerData.getPlayers();
+    }
+
+    /**
+     * Retorna um set contendo os jogadores contectados em determinada instância
+     *
+     * @param instance Instância
+     * @return Set de String com o nick dos jogadores da instância
+     */
+    public final static Set<String> getPlayersOnInstanceByName(String instance) {
+        return PlayerData.getPlayersOnInstanceByName(instance);
     }
 
     /**
@@ -115,6 +134,16 @@ public class RedisManagerAPI {
      */
     public final static boolean isPlayerOnline(UUID uuid) {
         return PlayerData.isPlayerOnline(uuid);
+    }
+
+    /**
+     * Verifica se um jogador está online em alguma instância
+     *
+     * @param name Nick do jogador
+     * @return {@code true} para online e {@code false} para offline
+     */
+    public final static boolean isPlayerOnline(String name) {
+        return PlayerData.isPlayerOnline(name);
     }
 
     /**

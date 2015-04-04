@@ -29,11 +29,15 @@ public class PlayerData {
      */
     public static void gracefulLogout(ProxiedPlayer player) {
         UUID uuid = player.getUniqueId();
+        String name = player.getName();
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
-            // Remove o jogador da lista de jogadores onlines na instância
-            rsc.srem("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnline", uuid.toString());
+            // Remove o jogador da lista de jogadores onlines na instância, por Nick
+            rsc.srem("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineName", name);
+
+            // Remove o jogador da lista de jogadores onlines na instância, por UUID
+            rsc.srem("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineUUID", uuid.toString());
 
             // Iguala o tempo da última vez que o jogador esteve online ao último contato da instância com o Redis, caso o jogador não tenha sido limpo antes
             rsc.hset("player:" + uuid.toString(), "online", String.valueOf(System.currentTimeMillis()));
@@ -59,8 +63,12 @@ public class PlayerData {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
-            // Remove o jogador da lista de jogadores onlines na instância
-            rsc.srem("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnline", uuid.toString());
+            // Remove o jogador da lista de jogadores onlines na instância, por Nick
+            String name = rsc.hget("player:" + uuid.toString(), "name");
+            rsc.srem("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineName", name);
+
+            // Remove o jogador da lista de jogadores onlines na instância, por UUID
+            rsc.srem("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineUUID", uuid.toString());
 
             // Iguala o tempo da última vez que o jogador esteve online ao último contato da instância com o Redis, caso o jogador não tenha sido limpo antes
             if(rsc.hexists("player:" + uuid.toString(), "online") && Long.parseLong(rsc.hget("player:" + uuid.toString(), "online")) == 0L)
@@ -81,6 +89,18 @@ public class PlayerData {
     /**
      * Lista de jogadores conectados em todas as instâncias
      *
+     * @return Set de String com o nick dos jogadores
+     */
+    public static Set<String> getPlayersByName() {
+        Set<String> players = new HashSet<String>();
+        for(String instance : RedisConfiguration.instancesIDs)
+            players.addAll(getPlayersOnInstanceByName(instance));
+        return players;
+    }
+
+    /**
+     * Lista de jogadores conectados em todas as instâncias
+     *
      * @return Set de UUID dos jogadores
      */
     public static Set<UUID> getPlayers() {
@@ -94,6 +114,28 @@ public class PlayerData {
      * Lista de jogadores conectados em determniada instância
      *
      * @param instance Instância
+     * @return Set de String com o nick dos jogadores na instância
+     */
+    public static Set<String> getPlayersOnInstanceByName(String instance) {
+        JedisPool pool = Redis.getPool();
+        Jedis rsc = pool.getResource();
+        try {
+            Set<String> players = new HashSet<String>();
+            for(String name : rsc.smembers("instance:" + instance + ":usersOnlineName"))
+                players.add(name);
+            return players;
+        } catch (JedisConnectionException e) {
+            pool.returnBrokenResource(rsc);
+        } finally {
+            pool.returnResource(rsc);
+        }
+        return null;
+    }
+
+    /**
+     * Lista de jogadores conectados em determniada instância
+     *
+     * @param instance Instância
      * @return Set de UUID dos jogadores na instância
      */
     public static Set<UUID> getPlayersOnInstance(String instance) {
@@ -101,7 +143,7 @@ public class PlayerData {
         Jedis rsc = pool.getResource();
         try {
             Set<UUID> players = new HashSet<UUID>();
-            for(String stringUUID : rsc.smembers("instance:" + instance + ":usersOnline")) {
+            for(String stringUUID : rsc.smembers("instance:" + instance + ":usersOnlineUUID")) {
                 UUID uuid = UUID.fromString(stringUUID);
                 players.add(uuid);
             }
@@ -112,6 +154,16 @@ public class PlayerData {
             pool.returnResource(rsc);
         }
         return null;
+    }
+
+    /**
+     * Se o jogador está online ou não
+     *
+     * @param name Nick do jogador
+     * @return {@code true} para online e {@code false} para offlne
+     */
+    public static boolean isPlayerOnline(String name) {
+        return getPlayersByName().contains(name);
     }
 
     /**

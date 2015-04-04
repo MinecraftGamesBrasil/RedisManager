@@ -45,7 +45,7 @@ public class Instances {
         try {
             int c = 0;
             for(String server : RedisConfiguration.instancesIDs)
-                c += rsc.scard("instance:" + server + ":usersOnline");
+                c += rsc.scard("instance:" + server + ":usersOnlineUUID");
             return c;
         } catch (JedisConnectionException e) {
             pool.returnBrokenResource(rsc);
@@ -63,10 +63,14 @@ public class Instances {
         Jedis rsc = pool.getResource();
         try {
             // Limpa os registros dos jogadores conectados a instancia
-            for(String stringUUID : rsc.smembers("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnline")) {
+            for(String stringUUID : rsc.smembers("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineUUID")) {
                 UUID uuid = UUID.fromString(stringUUID);
                 PlayerData.cleanUpPlayer(uuid);
             }
+
+            // Garante que os Nicks sejam excluídos da lista de jogadores online por Nick
+            for(String name : rsc.smembers("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineName"))
+                rsc.srem("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineName", name);
 
             // Reseta o tempo do contato da instância com o Redis
             rsc.set("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":heartbeats", "0");
