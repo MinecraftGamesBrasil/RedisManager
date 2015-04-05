@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
  * @author Ramon, Lucas
  */
 public class RedisManager extends Plugin {
-
+//Teste
     public static RedisManager plugin;
 
     public static RedisConfiguration configuration;
