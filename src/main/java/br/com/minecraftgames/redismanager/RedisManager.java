@@ -14,8 +14,6 @@ import net.md_5.bungee.api.plugin.Plugin;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-//Teste
-
 /**
  * <h1>Controla todas as funções relativas ao Redis</h1>
  * O RedisManager funciona em conjunto com o ProxyManager
