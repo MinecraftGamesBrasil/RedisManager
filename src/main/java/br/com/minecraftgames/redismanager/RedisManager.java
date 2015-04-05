@@ -98,7 +98,7 @@ public class RedisManager extends Plugin {
         // Desliga a conexão com Redis
         Redis.getPool().destroy();
     }
-     
+    
     /**
      * Converte uma mensagem(String) normal no formato de mensagens do BungeeCord(ChatComponent)
      *
