@@ -1,2 +1,2 @@
 # RedisManager
-Plugin to handle redis functions of BungeeCord instance - MinecraftGames
+Plugin para gerenciar o Redis - MinecraftGames
