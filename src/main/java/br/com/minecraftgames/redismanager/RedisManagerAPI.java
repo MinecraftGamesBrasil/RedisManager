@@ -268,22 +268,11 @@ public class RedisManagerAPI {
      *
      * @param uuid UUID do jogador
      * @param punisher Nome do staffer que baniu
-     * @param time Tempo de duração do ban
-     * @param reason Motivo do ban
+     * @param motive Motivo do ban
+     * @param duration Tempo de duração do ban
      */
-    public final static void ban(UUID uuid, String punisher, int time, String reason) {
-        publish("ban", uuid.toString() + "%=%" + punisher + "%=%" + time + "%=%" + reason);
-    }
-
-    /**
-     * Comunica o kick de um jogador à todas as instâncias
-     *
-     * @param uuid UUID do jogador
-     * @param punisher Nome do staffer que kickou
-     * @param reason Motivo do kick
-     */
-    public final static void kick(UUID uuid, String punisher, String reason) {
-        publish("kick", uuid.toString() + "%=%" + punisher + "%=%" + reason);
+    public final static void transmitBan(UUID uuid, String punisher, int motive, int duration) {
+        publish("ban", uuid.toString() + "%=%" + punisher + "%=%" + motive + "%=%" + duration);
     }
 
     /**
@@ -291,21 +280,11 @@ public class RedisManagerAPI {
      *
      * @param uuid UUID do jogador
      * @param punisher Nome do staffer que mutou
-     * @param time Tempo do mute
-     * @param reason Motivo do mute
+     * @param motive Motivo do mute
+     * @param duration Tempo de duração do mute
      */
-    public final static void mute(UUID uuid, String punisher, int time, String reason) {
-        publish("mute", uuid.toString() + "%=%" + punisher + "%=%" + time + "%=%" + reason);
-    }
-
-    /**
-     * Comunica o unban de um jogador à todas as instâncias
-     *
-     * @param uuid UUID do jogador
-     * @param staffer Nome do staffer que deu o unban
-     */
-    public final static void unban(UUID uuid, String staffer) {
-        publish("unban", uuid.toString() + "%=%" + staffer);
+    public final static void transmitMute(UUID uuid, String punisher, int motive, int duration) {
+        publish("mute", uuid.toString() + "%=%" + punisher + "%=%" + motive + "%=%" + duration);
     }
 
     /**
@@ -314,7 +293,7 @@ public class RedisManagerAPI {
      * @param uuid UUID do jogador
      * @param staffer Nome do staffer que deu o unmute
      */
-    public final static void unmute(UUID uuid, String staffer) {
+    public final static void transmitUnmute(UUID uuid, String staffer) {
         publish("unmute", uuid.toString() + "%=%" + staffer);
     }
 
