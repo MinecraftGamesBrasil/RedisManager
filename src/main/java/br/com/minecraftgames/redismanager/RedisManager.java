@@ -22,14 +22,14 @@ import java.util.concurrent.Executors;
  * @author Ramon, Lucas
  */
 public class RedisManager extends Plugin {
-    
+
     public static RedisManager plugin;
 
     public static RedisConfiguration configuration;
     public static ProcessorManager processor;
-    public static RedisManagerAPI api;
+    public static RedisManagerAPI API;
     public static ExecutorService service;
-    public static PubSubListener psl;
+    public static PubSubListener PSL;
 
     public static boolean allowConnections;
 
@@ -52,17 +52,17 @@ public class RedisManager extends Plugin {
         processor = new ProcessorManager(this);
 
         // Inicia a API
-        api = new RedisManagerAPI(this);
+        API = new RedisManagerAPI(this);
 
         // Inicia o PubSubListener
-        psl = new PubSubListener();
+        PSL = new PubSubListener();
 
         // Inicia o ExecutorService em outro thread
         getProxy().getScheduler().runAsync(this, new Runnable() {
             @Override
             public void run() {
                 service = Executors.newFixedThreadPool(16);
-                service.submit(psl);
+                service.submit(PSL);
             }
         });
 
@@ -98,7 +98,7 @@ public class RedisManager extends Plugin {
         // Desliga a conexão com Redis
         Redis.getPool().destroy();
     }
-    
+
     /**
      * Converte uma mensagem(String) normal no formato de mensagens do BungeeCord(ChatComponent)
      *
@@ -116,5 +116,14 @@ public class RedisManager extends Plugin {
      */
     public ExecutorService getService() {
         return service;
+    }
+
+    /**
+     * Retorna a API
+     *
+     * @return RedisManagerAPI
+     */
+    public static RedisManagerAPI getAPI() {
+        return API;
     }
 }

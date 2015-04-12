@@ -157,6 +157,19 @@ public class PlayerData {
     }
 
     /**
+     * Retorna o UUID do jogador
+     *
+     * @param name Nick do jogador
+     * @return UUID do jogador
+     */
+    public static UUID getPlayerUUID(String name) {
+        for(UUID uuid : getPlayers())
+            if(getPlayerName(uuid).equalsIgnoreCase(name))
+                return uuid;
+        return null;
+    }
+
+    /**
      * Se o jogador está online ou não
      *
      * @param name Nick do jogador
@@ -174,6 +187,28 @@ public class PlayerData {
      */
     public static boolean isPlayerOnline(UUID uuid) {
         return getPlayers().contains(uuid);
+    }
+
+    /**
+     * Nick do jogador
+     *
+     * @param uuid UUID do jogador
+     * @return String com o nick do jogador
+     */
+    public static String getPlayerName(UUID uuid) {
+        JedisPool pool = Redis.getPool();
+        Jedis rsc = pool.getResource();
+        try {
+            String name = null;
+            if(rsc.hexists("player:" + uuid.toString(), "name"))
+                name = rsc.hget("player:" + uuid.toString(), "name");
+            return name;
+        } catch (JedisConnectionException e) {
+            pool.returnBrokenResource(rsc);
+        } finally {
+            pool.returnResource(rsc);
+        }
+        return null;
     }
 
     /**

@@ -59,36 +59,6 @@ public class RedisManagerAPI {
     }
 
     /**
-     * Retorna o tempo em MS(long) do último logout do jogador
-     *
-     * @param uuid UUID do jogador
-     * @return {@code 0} caso o jogador esteja online, {@code -1} caso o jogador nunca tenha entrado ou o MS do último logout
-     */
-    public final static long getLastOnline(UUID uuid) {
-        return PlayerData.getLastOnline(uuid);
-    }
-
-    /**
-     * Retorna o server do BungeeCord em que o jogador, de qualquer instância, está conectado
-     *
-     * @param uuid UUID do jogador
-     * @return ServerInfo do server do BungeeCord
-     */
-    public final static ServerInfo getBungeeServerFor(UUID uuid) {
-        return PlayerData.getBungeeServerFor(uuid);
-    }
-
-    /**
-     * Retorna a instância do BungeeCord em que o jogador está conectado
-     *
-     * @param uuid UUID do jogador
-     * @return String no formato: {@code bungeeX}, onde {@code X} representa o número da instância
-     */
-    public final static String getInstanceFor(UUID uuid) {
-        return PlayerData.getInstanceFor(uuid);
-    }
-
-    /**
      * Retorna um set contendo os jogadores que estão conectados em todas as instâncias
      *
      * @return Set de String com nick dos jogadores
@@ -147,6 +117,16 @@ public class RedisManagerAPI {
     }
 
     /**
+     * Retorna o UUID de um jogador
+     *
+     * @param name Nick do jogador
+     * @return UUID do jogador
+     */
+    public final static UUID getPlayerUUID(String name) {
+        return PlayerData.getPlayerUUID(name);
+    }
+
+    /**
      * Retorna o IP de um jogador que esteja em qualquer instância
      *
      * @param uuid UUID do jogador
@@ -154,6 +134,46 @@ public class RedisManagerAPI {
      */
     public final static InetAddress getPlayerIp(UUID uuid) {
         return PlayerData.getIpAddress(uuid);
+    }
+
+    /**
+     * Retorna o server do BungeeCord em que o jogador, de qualquer instância, está conectado
+     *
+     * @param uuid UUID do jogador
+     * @return ServerInfo do server do BungeeCord
+     */
+    public final static ServerInfo getBungeeServerFor(UUID uuid) {
+        return PlayerData.getBungeeServerFor(uuid);
+    }
+
+    /**
+     * Retorna a instância do BungeeCord em que o jogador está conectado
+     *
+     * @param uuid UUID do jogador
+     * @return String no formato: {@code bungeeX}, onde {@code X} representa o número da instância
+     */
+    public final static String getInstanceFor(UUID uuid) {
+        return PlayerData.getInstanceFor(uuid);
+    }
+
+    /**
+     * Retorna o tempo em MS(long) do último logout do jogador
+     *
+     * @param uuid UUID do jogador
+     * @return {@code 0} caso o jogador esteja online, {@code -1} caso o jogador nunca tenha entrado ou o MS do último logout
+     */
+    public final static long getLastOnline(UUID uuid) {
+        return PlayerData.getLastOnline(uuid);
+    }
+
+    /**
+     * Retorna o nick do jogador
+     *
+     * @param uuid UUID do jogador
+     * @return String com o nick do jogador.
+     */
+    public final static String getPlayerName(UUID uuid) {
+        return PlayerData.getPlayerName(uuid);
     }
 
     /**
