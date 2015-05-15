@@ -194,11 +194,11 @@ public class ServerData {
      *
      * @return {@code true} para o chat habilitado ou {@code false} para desabilitado
      */
-    public static boolean getChatState() {
+    public static boolean getGlobalChatState() {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
-            return !rsc.exists("config:chat-state");
+            return !rsc.exists("config:global-chat-state");
         } catch (JedisConnectionException e) {
             pool.returnBrokenResource(rsc);
         } finally {
@@ -212,16 +212,16 @@ public class ServerData {
      *
      * @param state Novo status
      */
-    public static void setChatState(String state) {
+    public static void setGlobalChatState(String state) {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
             if(state.equalsIgnoreCase("off")) {
-                rsc.set("config:chat-off", "true");
-                RedisConfiguration.isChatOff = true;
+                rsc.set("config:global-chat-off", "true");
+                RedisConfiguration.isGlobalChatOff = true;
             } else {
-                rsc.del("config:chat-off");
-                RedisConfiguration.isChatOff = false;
+                rsc.del("config:global-chat-off");
+                RedisConfiguration.isGlobalChatOff = false;
             }
         } catch (JedisConnectionException e) {
             pool.returnBrokenResource(rsc);

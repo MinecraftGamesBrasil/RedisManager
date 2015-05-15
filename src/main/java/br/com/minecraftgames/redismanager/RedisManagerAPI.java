@@ -226,8 +226,8 @@ public class RedisManagerAPI {
      *
      * @return {@code true} para ativo e {@code false} para desativado
      */
-    public final static boolean isChatOff() {
-        return RedisConfiguration.isChatOff;
+    public final static boolean isGlobalChatOff() {
+        return RedisConfiguration.isGlobalChatOff;
     }
 
     /**
@@ -302,8 +302,8 @@ public class RedisManagerAPI {
      *
      * @param to Novo status: {@code on} para ativar e {@code off} para desativar
      */
-    public final static void turnChat(String to) {
-        publish("turnchat", to);
+    public final static void changeGlobalChatState(String to) {
+        publish("changeglobalchatstate", to);
     }
 
     /**

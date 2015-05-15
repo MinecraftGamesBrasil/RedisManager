@@ -47,7 +47,7 @@ public class RedisConfiguration {
     public static Set<UUID> tellOff = new HashSet<UUID>();
     public static Set<UUID> quoteOff = new HashSet<UUID>();
     public static Set<String> whitelistedLobbys = new HashSet<String>();
-    public static boolean isChatOff;
+    public static boolean isGlobalChatOff;
 
     /**
      * Registra o ID da instancia no Redis
@@ -133,6 +133,6 @@ public class RedisConfiguration {
         whitelistedLobbys = ServerData.getWhitelistedLobbys();
 
         // Boolean que se refere ao status atual do chat normal (se está ligado ou não)
-        isChatOff = ServerData.getChatState();
+        isGlobalChatOff = ServerData.getGlobalChatState();
     }
 }

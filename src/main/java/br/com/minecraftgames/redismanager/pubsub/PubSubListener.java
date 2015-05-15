@@ -26,7 +26,7 @@ public class PubSubListener implements Runnable {
             jpsh = new JedisPubSubHandler();
 
             // Registras os canais que o PubSub vai utilizar
-            rsc.subscribe(jpsh, "sendtochannel", "sendtoplayer", "kick", "ban", "mute", "unban", "unmute", "turnchat",
+            rsc.subscribe(jpsh, "sendtochannel", "sendtoplayer", "kick", "ban", "mute", "unban", "unmute", "changeglobalchatstate",
                     "turntell", "turnquote", "whitelistedlobby", "tell", "send", "vote", "updatesidebar", "reloadgroup",
                     "reloadam", "reloadexecutors", "reloadconfig", "warnquote");
         } catch (JedisException | ClassCastException ignored) {}

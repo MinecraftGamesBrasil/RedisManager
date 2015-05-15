@@ -17,6 +17,7 @@ public class Redis {
     // Dados do banco de dados
     private static String server = "172.16.0.11";
     private static int port = 6379;
+    private static String password = "HoLz";
 
     /**
      * Cria a conexão com o Redis
@@ -26,7 +27,7 @@ public class Redis {
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMaxTotal(8);
         config.setJmxEnabled(false);
-        JedisPool jedisPool = new JedisPool(config, server, port, 0);
+        JedisPool jedisPool = new JedisPool(config, server, port, 0, password);
 
         Jedis rsc = null;
         try {

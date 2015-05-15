@@ -56,9 +56,9 @@ public class RedisListener implements Listener {
         }
 
         // Altera o status do chat normal
-        else if(channel.equals("turnchat")) {
+        else if(channel.equals("changeglobalchatstate")) {
             String action = args[0].toLowerCase();
-            ServerData.setChatState(action);
+            ServerData.setGlobalChatState(action);
         }
 
         // Altera o status de recebimento de tell de um jogador
