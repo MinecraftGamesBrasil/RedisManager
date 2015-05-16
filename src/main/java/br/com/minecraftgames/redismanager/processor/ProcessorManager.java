@@ -105,7 +105,7 @@ public class ProcessorManager {
             // Adiciona o jogador a lista de jogadores online (UUID)
             rsc.sadd("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineUUID", uuid.toString());
             // Adiciona o jogador a lista de jogadores online (Name)
-            rsc.sadd("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineName", name);
+            rsc.hset("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineName", name, uuid.toString());
 
             // Altera dados do jogador no Redis
             rsc.hset("player:" + uuid.toString(), "name", name);
@@ -133,7 +133,7 @@ public class ProcessorManager {
             // Remove o jogador da lista de jogadores online (UUID)
             rsc.srem("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineUUID", uuid.toString());
             // Remove o jogador da lista de jogadores online (Name)
-            rsc.srem("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineName", uuid.toString());
+            rsc.hdel("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineName", name);
 
             // Salva o momento do último login do jogador
             rsc.hset("player:" + uuid.toString(), "online", String.valueOf(System.currentTimeMillis()));

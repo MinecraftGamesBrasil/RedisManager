@@ -34,7 +34,7 @@ public class PlayerData {
         Jedis rsc = pool.getResource();
         try {
             // Remove o jogador da lista de jogadores onlines na instância, por Nick
-            rsc.srem("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineName", name);
+            rsc.hdel("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineName", name);
 
             // Remove o jogador da lista de jogadores onlines na instância, por UUID
             rsc.srem("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineUUID", uuid.toString());
@@ -65,7 +65,7 @@ public class PlayerData {
         try {
             // Remove o jogador da lista de jogadores onlines na instância, por Nick
             String name = rsc.hget("player:" + uuid.toString(), "name");
-            rsc.srem("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineName", name);
+            rsc.hdel("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineName", name);
 
             // Remove o jogador da lista de jogadores onlines na instância, por UUID
             rsc.srem("instance:" + RedisConfiguration.BUNGEE + RedisConfiguration.instanceID + ":usersOnlineUUID", uuid.toString());
@@ -121,7 +121,7 @@ public class PlayerData {
         Jedis rsc = pool.getResource();
         try {
             Set<String> players = new HashSet<String>();
-            for(String name : rsc.smembers("instance:" + instance + ":usersOnlineName"))
+            for(String name : rsc.hkeys("instance:" + instance + ":usersOnlineName"))
                 players.add(name);
             return players;
         } catch (JedisConnectionException e) {
@@ -163,9 +163,31 @@ public class PlayerData {
      * @return UUID do jogador
      */
     public static UUID getPlayerUUID(String name) {
-        for(UUID uuid : getPlayers())
-            if(getPlayerName(uuid).equalsIgnoreCase(name))
+        for(String instance : RedisConfiguration.instancesIDs) {
+            UUID uuid;
+            if((uuid = getPlayerUUIDOnInstance(name, instance)) != null)
                 return uuid;
+        }
+        return null;
+    }
+
+    /**
+     * Retorna o UUID do jogador na instância
+     *
+     * @param name Nick do jogador
+     * @param instance Instância
+     * @return UUID do jogador
+     */
+    public static UUID getPlayerUUIDOnInstance(String name, String instance) {
+        JedisPool pool = Redis.getPool();
+        Jedis rsc = pool.getResource();
+        try {
+            return UUID.fromString(rsc.hget("instance:" + instance + ":usersOnlineName", name));
+        } catch (JedisConnectionException e) {
+            pool.returnBrokenResource(rsc);
+        } finally {
+            pool.returnResource(rsc);
+        }
         return null;
     }
 
