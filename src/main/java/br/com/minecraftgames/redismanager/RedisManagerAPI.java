@@ -328,26 +328,6 @@ public class RedisManagerAPI {
     }
 
     /**
-     * Altera o status do tell de um jogador
-     *
-     * @param uuid UUID do jogador
-     * @param to Novo status: {@code on} para ativar e {@code off} para desativar
-     */
-    public final static void turnTell(UUID uuid, String to) {
-        publish("turntell", uuid.toString() + "%=%" + to);
-    }
-
-    /**
-     * Altera o status das citações de um jogador
-     *
-     * @param uuid UUID do jogador
-     * @param to Novo status: {@code on} para ativar e {@code off} para desativar
-     */
-    public final static void turnQuote(UUID uuid, String to) {
-        publish("turnquote", uuid.toString() + "%=%" + to);
-    }
-
-    /**
      * Altera o status de bloqueio de algum lobby
      *
      * @param lobby Lobby a ser alterado, no formato: {@code lobbyX}, onde {@code X} representa o número do lobby
@@ -361,11 +341,11 @@ public class RedisManagerAPI {
      * Envia uma mensagem privada para um jogador
      *
      * @param from UUID do jogador que está enviando a mensagem privada
-     * @param to Nome do jogador que irá receber a mensagem
+     * @param to UUID do jogador que irá receber a mensagem
      * @param message Mensagem a ser enviada
      */
-    public final static void tell(UUID from, String to, String message) {
-        publish("tell", from.toString() + "%=%" + to + "%=%" + message);
+    public final static void tell(UUID from, UUID to, String message) {
+        publish("tell", from == null ? null : from.toString() + "%=%" + to + "%=%" + message);
     }
 
     /**
