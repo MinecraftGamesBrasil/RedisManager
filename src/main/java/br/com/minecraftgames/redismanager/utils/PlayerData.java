@@ -212,6 +212,46 @@ public class PlayerData {
     }
 
     /**
+     * Retorna se o tell do jogador está ativo
+     *
+     * @return {@code true} para tell ativo e {@code false} para tell desativado
+     */
+    public static boolean isTellOn(UUID uuid) {
+        JedisPool pool = Redis.getPool();
+        Jedis rsc = pool.getResource();
+        try {
+            if(!rsc.hexists("player:" + uuid.toString(), "tell-status"))
+                return false;
+            return rsc.hget("player:" + uuid.toString(), "tell-status").equals("on") ? true : false;
+        } catch (JedisConnectionException e) {
+            pool.returnBrokenResource(rsc);
+        } finally {
+            pool.returnResource(rsc);
+        }
+        return false;
+    }
+
+    /**
+     * Retorna se as citações do jogador está ativo
+     *
+     * @return S{@code true} para citações ativas e {@code false} para citações desativadas
+     */
+    public static boolean isQuoteOn(UUID uuid) {
+        JedisPool pool = Redis.getPool();
+        Jedis rsc = pool.getResource();
+        try {
+            if(!rsc.hexists("player:" + uuid.toString(), "quote-status"))
+                return false;
+            return rsc.hget("player:" + uuid.toString(), "quote-status").equals("on") ? true : false;
+        } catch (JedisConnectionException e) {
+            pool.returnBrokenResource(rsc);
+        } finally {
+            pool.returnResource(rsc);
+        }
+        return false;
+    }
+
+    /**
      * Server do BungeeCord que o jogador se encontra
      *
      * @param uuid UUID do jogador

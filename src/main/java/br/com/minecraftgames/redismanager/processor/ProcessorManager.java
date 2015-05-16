@@ -3,10 +3,7 @@ package br.com.minecraftgames.redismanager.processor;
 import br.com.minecraftgames.redismanager.Redis;
 import br.com.minecraftgames.redismanager.RedisConfiguration;
 import br.com.minecraftgames.redismanager.RedisManager;
-import br.com.minecraftgames.redismanager.processor.events.PlayerChangedServerEvent;
-import br.com.minecraftgames.redismanager.processor.events.PlayerLoggedInEvent;
-import br.com.minecraftgames.redismanager.processor.events.PlayerLoggedOffEvent;
-import br.com.minecraftgames.redismanager.processor.events.ProcessorEvent;
+import br.com.minecraftgames.redismanager.processor.events.*;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import redis.clients.jedis.Jedis;
@@ -72,6 +69,19 @@ public class ProcessorManager {
                     ProxiedPlayer player = event.getPlayer();
                     ServerInfo server = event.getNewServer();
                     processChangeServer(player, server);
+                }
+            };
+        }
+
+        // Caso o evento seja do tipo TellAndQuoteReceived
+        else if(processorEvent instanceof PlayerTellAndQuoteStatusReceived) {
+            final PlayerTellAndQuoteStatusReceived event = (PlayerTellAndQuoteStatusReceived) processorEvent;
+            processableEvent = new Runnable() {
+                public void run() {
+                    UUID uuid = event.getUUID();
+                    boolean isTellOn = event.isTellOn();
+                    boolean isQuoteOn = event.isQuoteOn();
+                    processSavePlayerTellAndQuote(uuid, isTellOn, isQuoteOn);
                 }
             };
         }
@@ -146,6 +156,26 @@ public class ProcessorManager {
         Jedis rsc = pool.getResource();
         try {
             rsc.hset("player:" + uuid.toString(), "bungee-server", server.getName());
+        } catch (JedisConnectionException e) {
+            pool.returnBrokenResource(rsc);
+        } finally {
+            pool.returnResource(rsc);
+        }
+    }
+
+    /**
+     * Processa o evento de PlayerTellAndQuoteReceived
+     *
+     * @param uuid UUID do jogador
+     * @param isTellOn status do tell do jogador
+     * @param isQuoteOn status do quote do jogador
+     */
+    private void processSavePlayerTellAndQuote(UUID uuid, boolean isTellOn, boolean isQuoteOn) {
+        JedisPool pool = Redis.getPool();
+        Jedis rsc = pool.getResource();
+        try {
+            rsc.hset("player:" + uuid.toString(), "tell-status", isTellOn ? "on" : "off");
+            rsc.hset("player:" + uuid.toString(), "quote-status", isQuoteOn ? "on" : "off");
         } catch (JedisConnectionException e) {
             pool.returnBrokenResource(rsc);
         } finally {

@@ -1,5 +1,6 @@
 package br.com.minecraftgames.redismanager;
 
+import br.com.minecraftgames.redismanager.processor.events.PlayerTellAndQuoteStatusReceived;
 import br.com.minecraftgames.redismanager.utils.PlayerData;
 import br.com.minecraftgames.redismanager.utils.ServerData;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -204,21 +205,32 @@ public class RedisManagerAPI {
     }
 
     /**
-     * Retorna jogadores com o tell desativado
+     * Salva no Redis o status do tell e citações do jogador
      *
-     * @return Set de UUID dos jogadores
+     * @param uuid UUID do jogador
+     * @param isTellOn status do tell do jogador
+     * @param isQuoteOn status das citações do jogador
      */
-    public final static Set<UUID> getTellOff() {
-        return RedisConfiguration.tellOff;
+    public final static void saveTellAndQuoteStatus(UUID uuid, boolean isTellOn, boolean isQuoteOn) {
+        RedisManager.processor.process(new PlayerTellAndQuoteStatusReceived(uuid, isTellOn, isQuoteOn));
     }
 
     /**
-     * Retorna jogadores com o citações desativadas
+     * Retorna se o tell do jogador está ativo
      *
-     * @return Set de UUID dos jogadores
+     * @return {@code true} para tell ativo e {@code false} para tell desativado
      */
-    public final static Set<UUID> getQuoteOff() {
-        return RedisConfiguration.quoteOff;
+    public final static boolean isTellOn(UUID uuid) {
+        return PlayerData.isTellOn(uuid);
+    }
+
+    /**
+     * Retorna se as citações do jogador está ativo
+     *
+     * @return S{@code true} para citações ativas e {@code false} para citações desativadas
+     */
+    public final static boolean isQuoteOn(UUID uuid) {
+        return PlayerData.isQuoteOn(uuid);
     }
 
     /**

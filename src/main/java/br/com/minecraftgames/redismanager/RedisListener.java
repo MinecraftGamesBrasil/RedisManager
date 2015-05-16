@@ -61,30 +61,6 @@ public class RedisListener implements Listener {
             ServerData.setGlobalChatState(action);
         }
 
-        // Altera o status de recebimento de tell de um jogador
-        else if(channel.equals("turntell")) {
-            String stringUUID = args[0];
-            String action = args[1].toLowerCase();
-            UUID uuid = UUID.fromString(stringUUID);
-
-            if(action.equals("off"))
-                ServerData.addTellOff(uuid);
-            else
-                ServerData.removeTellOff(uuid);
-        }
-
-        // Altera o status de recebimento de citações de um jogador
-        else if(channel.equals("turnquote")) {
-            String stringUUID = args[0];
-            String action = args[1].toLowerCase();
-            UUID uuid = UUID.fromString(stringUUID);
-
-            if(action.equals("off"))
-                ServerData.addQuoteOff(uuid);
-            else
-                ServerData.removeQuoteOff(uuid);
-        }
-
         // Envia uma mensagem a um jogador
         else if(channel.equals("message")) {
             String stringUUID = args[0];

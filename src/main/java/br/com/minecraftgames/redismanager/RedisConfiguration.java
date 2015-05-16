@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -44,8 +43,6 @@ public class RedisConfiguration {
     public static Set<String> instancesIDs;
     public static int globalCount;
 
-    public static Set<UUID> tellOff = new HashSet<UUID>();
-    public static Set<UUID> quoteOff = new HashSet<UUID>();
     public static Set<String> whitelistedLobbys = new HashSet<String>();
     public static boolean isGlobalChatOff;
 
@@ -123,11 +120,6 @@ public class RedisConfiguration {
      * Carrega a configuração armazenada no Redis
      */
     public void loadConfiguration() {
-        // Lista do UUID(String) dos jogadores com tell desativado
-        tellOff = ServerData.getTellOff();
-
-        // Lista do UUID(String) dos jogadores com citações desativadas
-        quoteOff = ServerData.getQuoteOff();
 
         // Lista dos lobbys em manutenção
         whitelistedLobbys = ServerData.getWhitelistedLobbys();
