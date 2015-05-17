@@ -182,7 +182,15 @@ public class PlayerData {
         JedisPool pool = Redis.getPool();
         Jedis rsc = pool.getResource();
         try {
-            return UUID.fromString(rsc.hget("instance:" + instance + ":usersOnlineName", name));
+            String rightCaseName = null;
+            for(String onlineName : getPlayersOnInstanceByName(instance)) {
+                if(onlineName.equalsIgnoreCase(name)) {
+                    rightCaseName = onlineName;
+                }
+            }
+            if(rightCaseName == null)
+                return null;
+            return UUID.fromString(rsc.hget("instance:" + instance + ":usersOnlineName", rightCaseName));
         } catch (JedisConnectionException e) {
             pool.returnBrokenResource(rsc);
         } finally {
