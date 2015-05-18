@@ -312,10 +312,10 @@ public class RedisManagerAPI {
     /**
      * Altera o status do chat normal
      *
-     * @param to Novo status: {@code on} para ativar e {@code off} para desativar
+     * @param on Novo status: {@code true} para ativar e {@code false} para desativar
      */
-    public final static void changeGlobalChatState(String to) {
-        publish("changeglobalchatstate", to);
+    public final static void setGlobalChatOn(boolean on) {
+        publish("changeglobalchatstate", String.valueOf(on));
     }
 
     /**
