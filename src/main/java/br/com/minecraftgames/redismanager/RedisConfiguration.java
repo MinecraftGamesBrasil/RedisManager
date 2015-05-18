@@ -44,7 +44,6 @@ public class RedisConfiguration {
     public static int globalCount;
 
     public static Set<String> whitelistedLobbys = new HashSet<String>();
-    public static boolean isGlobalChatOff;
 
     /**
      * Registra o ID da instancia no Redis
@@ -120,11 +119,7 @@ public class RedisConfiguration {
      * Carrega a configuração armazenada no Redis
      */
     public void loadConfiguration() {
-
         // Lista dos lobbys em manutenção
         whitelistedLobbys = ServerData.getWhitelistedLobbys();
-
-        // Boolean que se refere ao status atual do chat normal (se está ligado ou não)
-        isGlobalChatOff = ServerData.getGlobalChatState();
     }
 }

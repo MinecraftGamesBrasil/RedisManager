@@ -234,15 +234,6 @@ public class RedisManagerAPI {
     }
 
     /**
-     * Verifica o status atual do chat normal
-     *
-     * @return {@code true} para ativo e {@code false} para desativado
-     */
-    public final static boolean isGlobalChatOff() {
-        return RedisConfiguration.isGlobalChatOff;
-    }
-
-    /**
      * Retorna os lobbys que estão em manutenção
      *
      * @return Set de String no formato: {@code lobbyX}, onde {@code X} representa o número do lobby
