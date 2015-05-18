@@ -55,12 +55,6 @@ public class RedisListener implements Listener {
                 ServerData.removeLobbyFromWhitelist(lobby);
         }
 
-        // Altera o status do chat normal
-        else if(channel.equals("changeglobalchatstate")) {
-            String action = args[0].toLowerCase();
-            ServerData.setGlobalChatState(action);
-        }
-
         // Envia uma mensagem a um jogador
         else if(channel.equals("message")) {
             String stringUUID = args[0];
