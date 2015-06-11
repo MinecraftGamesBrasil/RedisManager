@@ -8,8 +8,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.net.InetAddress;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * <h1>API de funções</h1>
@@ -300,12 +299,23 @@ public class RedisManagerAPI {
     }
 
     /**
-     * Avisa à todas as instâncias para recarregarem o cache de um setor
+     * Altera se um lobby está ou não na blacklist
      *
-     * @param sector Setor a ser recarregado
+     * @param blacklist Map<Integer, Boolean> contendo o número do lobby com a informação de adcionar ou retirar
      */
-    public final static void reload(String sector) {
-        publish("reload", sector);
+    public final static void blacklistLobby(HashMap<Integer, Boolean> blacklist) {
+        for(Map.Entry<Integer, Boolean> entry : blacklist.entrySet())
+            publish("blacklistlobby", String.valueOf(entry.getKey()) + "%=%" + String.valueOf(entry.getValue() ? 1 : 0));
+    }
+
+    /**
+     * Avisa à todas as instâncias para recarregarem o cache de um ou mais setores
+     *
+     * @param sectors Setor(es) a ser(em) recarregado(s)
+     */
+    public final static void reload(HashSet<String> sectors) {
+        for(String sector : sectors)
+            publish("reload", sector);
     }
 
     /**
