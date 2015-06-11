@@ -303,9 +303,8 @@ public class RedisManagerAPI {
      *
      * @param blacklist Map<Integer, Boolean> contendo o número do lobby com a informação de adcionar ou retirar
      */
-    public final static void blacklistLobby(HashMap<Integer, Boolean> blacklist) {
-        for(Map.Entry<Integer, Boolean> entry : blacklist.entrySet())
-            publish("blacklistlobby", String.valueOf(entry.getKey()) + "%=%" + String.valueOf(entry.getValue() ? 1 : 0));
+    public final static void blacklistLobby(int lobby, boolean blacklist) {
+        publish("blacklistlobby", String.valueOf(lobby) + "%=%" + String.valueOf(blacklist ? 1 : 0));
     }
 
     /**
