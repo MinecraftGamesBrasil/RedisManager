@@ -1,7 +1,6 @@
 package br.com.minecraftgames.redismanager;
 
 import br.com.minecraftgames.redismanager.utils.Instances;
-import br.com.minecraftgames.redismanager.utils.ServerData;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
@@ -11,7 +10,6 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -34,7 +32,6 @@ public class RedisConfiguration {
 
         setInstanceID();
         setupInstance();
-        loadConfiguration();
     }
 
     public final static String BUNGEE = "bungee";
@@ -42,8 +39,6 @@ public class RedisConfiguration {
     public static int instanceID;
     public static Set<String> instancesIDs;
     public static int globalCount;
-
-    public static Set<String> whitelistedLobbys = new HashSet<String>();
 
     /**
      * Registra o ID da instancia no Redis
@@ -113,13 +108,5 @@ public class RedisConfiguration {
 
         // Cria a task de atualização periódica
         plugin.getProxy().getScheduler().schedule(plugin, recache, 0L, 1L, TimeUnit.SECONDS);
-    }
-
-    /**
-     * Carrega a configuração armazenada no Redis
-     */
-    public void loadConfiguration() {
-        // Lista dos lobbys em manutenção
-        whitelistedLobbys = ServerData.getWhitelistedLobbys();
     }
 }

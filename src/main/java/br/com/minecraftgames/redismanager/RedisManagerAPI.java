@@ -2,7 +2,6 @@ package br.com.minecraftgames.redismanager;
 
 import br.com.minecraftgames.redismanager.processor.events.PlayerTellAndQuoteStatusReceived;
 import br.com.minecraftgames.redismanager.utils.PlayerData;
-import br.com.minecraftgames.redismanager.utils.ServerData;
 import net.md_5.bungee.api.config.ServerInfo;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -234,15 +233,6 @@ public class RedisManagerAPI {
     }
 
     /**
-     * Retorna os lobbys que estão em manutenção
-     *
-     * @return Set de String no formato: {@code lobbyX}, onde {@code X} representa o número do lobby
-     */
-    public final static Set<String> getWhitelistedLobbys() {
-        return ServerData.getWhitelistedLobbys();
-    }
-
-    /**
      * Envia uma mensagem em um canal
      *
      * @param channelName Nome do canal onde a mensagem será enviada
@@ -319,16 +309,6 @@ public class RedisManagerAPI {
     }
 
     /**
-     * Altera o status de bloqueio de algum lobby
-     *
-     * @param lobby Lobby a ser alterado, no formato: {@code lobbyX}, onde {@code X} representa o número do lobby
-     * @param to Novo status: {@code add} adciona ou {@code del} deleta um lobby a lista de lobbys bloqueados
-     */
-    public final static void whitelistedLobby(String lobby, String to) {
-        publish("whitelistedlobby", lobby + "%=%" + to);
-    }
-
-    /**
      * Envia uma mensagem privada para um jogador
      *
      * @param from UUID do jogador que está enviando a mensagem privada
@@ -344,11 +324,10 @@ public class RedisManagerAPI {
      *
      * @param uuids Set de UUID dos jogadores
      * @param target servidor destino do BungeeCord
-     * @param message {@code true} envia a mensagem ao jogador, enquanto {@code false} realiza a operação silenciosamente
      */
-    public final static void send(Set<UUID> uuids, String target, boolean message) {
+    public final static void send(Set<UUID> uuids, String target) {
         for(UUID uuid : uuids)
-            publish("send", uuid.toString() + "%=%" + target + "%=%" + String.valueOf(message));
+            publish("send", uuid.toString() + "%=%" + target);
     }
 
     /**

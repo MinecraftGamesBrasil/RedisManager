@@ -1,7 +1,6 @@
 package br.com.minecraftgames.redismanager;
 
 import br.com.minecraftgames.redismanager.pubsub.PubSubMessageEvent;
-import br.com.minecraftgames.redismanager.utils.ServerData;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -45,18 +44,8 @@ public class RedisListener implements Listener {
         String message = event.getMessage();
         String[] args = message.split("%=%");
 
-        // Coloca um lobby em manutenção
-        if(channel.equals("whitelistlobby")) {
-            String lobby = args[0];
-            String action = args[1].toLowerCase();
-            if(action.equals("add"))
-                ServerData.addLobbyToWhitelist(lobby);
-            else
-                ServerData.removeLobbyFromWhitelist(lobby);
-        }
-
         // Envia uma mensagem a um jogador
-        else if(channel.equals("message")) {
+        if(channel.equals("message")) {
             String stringUUID = args[0];
             String msg = args[1];
             UUID uuid = UUID.fromString(stringUUID);
@@ -83,13 +72,6 @@ public class RedisListener implements Listener {
 
                 // Envia o jogador
                 player.connect(plugin.getProxy().getServerInfo(target));
-
-                // Envia a mensagem ao jogador
-                if(args.length >= 3) {
-                    if(args[2].equalsIgnoreCase("true")) {
-                        player.sendMessage(RedisManager.convert("&aVocê foi teleportado para o servidor " + target));
-                    }
-                }
             }
         }
     }
